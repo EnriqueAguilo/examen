@@ -1,0 +1,13 @@
+EXAMEN 2024 A:
+
+CREATE OR REPLACE TABLE Garantias(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    productoId INT NOT NULL,
+    fechaInicioGarantia DATE NOT NULL,
+    fechaFinGarantia DATE NOT NULL,
+    garantiaExtendida BOOLEAN DEFAULT FALSE, 
+
+    CHECK (fechaInicioGarantia<fechaFinGarantia),
+    FOREIGN KEY (productoId) REFERENCES productos(id)
+);
+
