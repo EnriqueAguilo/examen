@@ -11,32 +11,19 @@ WHERE tp.nombre = 'Digitales';
 -- gestionados en este año y el importe total de cada uno de ellos, ordenados de mayor a menor 
 -- importe gestionado. Los empleados que no hayan gestionado ningún pedido, también deben 
 -- aparecer. 
-
-SELECT u.nombre, COUNT(lp.pedidoId) AS NumeroPedidos, COALESCE(SUM(lp.precio * lp.unidades),0)  AS ImporteGestionadoPorPedido
-FROM pedidos p
-LEFT JOIN empleados e ON p.empleadoId = e.id
-LEFT JOIN usuarios u ON u.id = e.usuarioId
-JOIN lineaspedido lp ON lp.pedidoId = p.id
-WHERE YEAR(p.fechaRealizacion) = YEAR(CURDATE())-1
-GROUP BY e.id
-HAVING ImporteGestionadoPorPedido>500
-ORDER BY ImporteGestionadoPorPedido DESC;
-
-
-SELECT u.nombre, COUNT(DISTINCT p.id) AS NumeroPedidos, COALESCE(SUM(p.total), 0) AS ImporteGestionado
-FROM empleados e
-LEFT JOIN usuarios u ON u.id = e.usuarioId
-LEFT JOIN (
-    SELECT p.id, p.empleadoId, SUM(lp.precio * lp.unidades) AS total
-    FROM pedidos p
-    JOIN lineaspedido lp ON lp.pedidoId = p.id
-    WHERE YEAR(p.fechaRealizacion) = YEAR(CURDATE())-1
-    GROUP BY p.id
+-- Subconsulta: pedidos válidos (>500€, este año) con su total
+SELECT e.nombre AS nombre_empleado, COUNT(DISTINCT p.id) AS num_pedidos_mayores_500, COALESCE(SUM(p.total), 0) AS importe_total_gestionado
+FROM Empleados e
+LEFT JOIN ( SELECT p.id, p.empleadoId, SUM(lp.cantidad * lp.precioUnitario) AS total
+    FROM Pedidos p
+    JOIN LineasPedido lp ON lp.pedidoId = p.id
+    WHERE YEAR(p.fecha) = YEAR(CURDATE())
+    GROUP BY p.id, p.empleadoId
     HAVING total > 500
-) AS p ON p.empleadoId = e.id
-
-GROUP BY e.id, u.nombre
-ORDER BY ImporteGestionado DESC;
+) p ON e.id = p.empleadoId
+    
+GROUP BY e.id, e.nombre
+ORDER BY importe_total_gestionado DESC;
 
 
 EXAMEN 2024 B:
@@ -67,7 +54,7 @@ HAVING COUNT(DISTINCT ped.id) > 5;
 
 EXAMEN 2024 C:
 
---  Devuelva el nombre del producto, el precio unitario y las unidades compradas para las 5 líneas 
+-- 2.1. Devuelva el nombre del producto, el precio unitario y las unidades compradas para las 5 líneas 
 -- de pedido con más unidades. 
 
 SELECT prod.nombre, lp.precio, lp.unidades 
@@ -76,7 +63,7 @@ JOIN lineaspedido lp ON lp.productoId = prod.id
 ORDER BY unidades DESC 
 LIMIT 5;
 
---  Devuelva el nombre del empleado, la fecha de realización del pedido, el precio total del pedido y 
+-- 2.2. Devuelva el nombre del empleado, la fecha de realización del pedido, el precio total del pedido y 
 -- las unidades totales del pedido para todos los pedidos que de más 7 días de antigüedad desde que 
 -- se realizaron. Si un pedido no tiene asignado empleado, también debe aparecer en el listado 
 -- devuelto. 
