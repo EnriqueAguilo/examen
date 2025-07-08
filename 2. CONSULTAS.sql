@@ -75,3 +75,40 @@ LEFT JOIN usuarios u ON u.id = e.usuarioId
 JOIN lineaspedido lp ON lp.pedidoId = p.id
 WHERE TIMESTAMPDIFF(DAY,p.fechaRealizacion, CURDATE()) > 7
 GROUP BY lp.pedidoId;
+
+EXAMEN 2020:
+-- 4. Cree una consulta que devuelva el nombre del grado, el nombre de la asignatura, el número de créditos de la 
+-- asignatura y su tipo, para todas las asignaturas que pertenecen a todos los grados. Ordene los resultados por el nombre del grado.
+SELECT d.`name`, s.`name`, s.credits, s.`type`
+FROM `degrees` d
+JOIN subjects s ON d.degreeId = s.degreeId
+ORDER BY d.`name`;
+
+-- 5. Cree una consulta que devuelva la nota media del grupo cuyo ID=2
+SELECT AVG(gr.`value`) AS NotaMediaGrupo2
+FROM `groups` g
+JOIN grades gr ON gr.groupId = g.groupId
+WHERE gr.groupId = 2;
+
+-- 6. Cree una consulta que devuelva la nota media de cada grupo, ordenados por su nota media de mayor a menor.
+SELECT gr.groupId, AVG(gr.`value`) AS NotasMedias
+FROM `groups` g
+JOIN grades gr ON gr.groupId = g.groupId
+GROUP BY gr.groupId
+ORDER BY NotasMedias DESC;
+
+-- 7. Cree una consulta que devuelva la nota más alta y la nota más baja de cada grupo de Teoría de la asignatura con D=1
+SELECT gr.groupId, MAX(gr.`value`) AS MaxGrade, MIN(gr.`value`) AS MinGrade  
+FROM `groups` g
+JOIN grades gr ON gr.groupId = g.groupId
+WHERE gr.groupId = 1 AND g.activity = 'Teoria';
+
+-- 8. Cree una consulta que devuelva el nombre y los apellidos del estudiante que ha sacado la nota más alta del grupo con ID=10
+SELECT  s.firstName, s.surname
+FROM `groups` g
+JOIN grades gr ON gr.groupId = g.groupId
+JOIN students s ON s.studentId = gr.studentId
+WHERE gr.groupId = 10
+ORDER BY gr.`value` DESC 							
+LIMIT 1;
+
