@@ -161,3 +161,49 @@ BEGIN
 
 END //
 DELIMITER ;
+
+EXAMEN 2020;
+-- 2. Cree y ejecute un procedimiento almacenado llamado pinsertGrants() que cree las siguientes becas: Beca de 500€, de 3 meses, 
+-- en el año 2019, para el estudiante con ID=5. Beca de 700€, de 8 meses, en el año 2019, para el estudiante con ID=6.
+-- Beca de 1000€, que comienza el 01/01/2019, en el año 2019, para el estudiante con ID=7. 
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+	 pInsertGrants(cuantia INT, fechaInicio DATE, mesesDuracion INT, anyoBeca YEAR, studentId INT)
+BEGIN
+  INSERT INTO beca(cuantiaBeca, fechaInicio, mesesDuracion, anyoBeca, studentId) VALUES (cuantia, fechaInicio, mesesDuracion, anyoBeca, studentId);
+END//
+
+DELIMITER ;
+CALL pInsertGrants(500, NULL, 3, 2019,	5);
+CALL pInsertGrants(700, NULL, 8, 2019,	6);
+CALL pInsertGrants(1000, '2019-01-01', NULL , 2019, 8)
+
+-- 3. Cree un procedimiento almacenado llamado pUpdateGrants(s, a) que actualiza la cuantía de las becas del estudiante con 
+-- ID=s con el valor a. Ejecute la llamada a pUpdateGrants (5,600). Cree un procedimiento almacenado llamado pDeleteGrants(s) 
+-- que elimina las becas del estudiante con ID=s. Ejecute la llamada pDeleteGrants(7).
+DELIMITER //
+CREATE OR REPLACE PROCEDURE pUpdateGrants(estudianteId INT, dinero INT)
+BEGIN
+  UPDATE beca
+  SET cuantiaBeca = dinero
+  WHERE studentId = estudianteId;
+END//
+
+DELIMITER ;
+
+CALL pUpdateGrants(5, 600);
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+	 pDeleteGrants(estudianteId INT)
+BEGIN
+  DELETE FROM beca
+  WHERE studentId = estudianteId;
+END//
+
+
+DELIMITER ;
+
+CALL pDeleteGrants(7);
+
+ 
