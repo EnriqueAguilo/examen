@@ -49,3 +49,23 @@ CREATE OR REPLACE TABLE valoraciones (
     FOREIGN KEY (productoId) REFERENCES productos(id),
     FOREIGN KEY (clienteId) REFERENCES clientes(id)
 );
+
+EXAMEN 2020:
+-- Añada el requisito de información Beca. Una beca es una ayuda económica que recibe un estudiante para realizar 
+-- sus estudios en un año académico particular. Sus atributos son: el estudiante beneficiario de la beca, la cuantía 
+-- de la beca, el año académico, la fecha de inicio y la duración en meses. Hay que tener en cuenta las siguientes restricciones:
+-- Un estudiante sólo puede ser beneficiario de una beca para un año académico, pero puede tener varias si son en distintos 
+-- cursos académicos. La cuantía de la beca no puede ser inferior a 500€ ni superior a 2500€.
+-- Todos los atributos son obligatorios salvo la fecha de inicio y la duración
+CREATE OR REPLACE TABLE Beca (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    studentId INT NOT NULL,
+    anyoBeca YEAR NOT NULL,
+    cuantiaBeca INT NOT NULL,
+    fechaInicio DATE,
+    mesesDuracion INT,
+    UNIQUE(studentId, anyoBeca),
+    CONSTRAINT cuantiaRestriccion CHECK (cuantiaBeca >=500 AND cuantiaBeca <=2500),    
+    FOREIGN KEY (studentId) REFERENCES students(studentId)
+);
+
