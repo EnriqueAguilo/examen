@@ -1,4 +1,10 @@
 EXAMEN 2024 A:
+-- 1. Cree un procedimiento que permita actualizar el precio de un producto dado y que modifique los 
+-- precios de las líneas de pedido asociadas al producto dado solo en aquellos pedidos que aún no 
+-- hayan sido enviados. (1,5 puntos) 
+-- 2. Asegure que el nuevo precio no sea un 50% menor que el precio actual y lance excepción si se da el 
+-- caso con el siguiente mensaje: (1 punto) No se permite rebajar el precio más del 50%. 
+-- 3. Garantice que o bien se realizan todas las operaciones o bien no se realice ninguna. (1 punto)
 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE actualizar_precio_producto(
@@ -48,11 +54,13 @@ DELIMITER ;
 
 
 EXAMEN 2024 B:
-
 -- Cree un procedimiento que permita crear un nuevo producto con posibilidad de que sea para regalo. 
 -- Si el producto está destinado a regalo se creará un pedido con ese producto y costes 0€ para el 
 -- cliente más antiguo. 
-
+-- Asegure que el precio del producto para regalo no debe superar los 50 euros y lance excepción si se 
+-- da el caso con el siguiente mensaje: (1 punto)  No se permite crear un producto para regalo de más de 50€. 
+-- Garantice que o bien se realizan todas las operaciones o bien no se realice ninguna. (1 punto)
+	
 DELIMITER //
 CREATE PROCEDURE insertar_producto_y_regalos(
     IN p_nombre VARCHAR(255),
@@ -66,8 +74,7 @@ BEGIN
 	DECLARE v_productoId INT;
 	DECLARE v_pedidoId INT;
 	DECLARE v_clienteMasAntiguo INT;
-	
-	
+
 	-- Manejo de errores
   	DECLARE EXIT HANDLER FOR SQLEXCEPTION
   	BEGIN
@@ -114,13 +121,18 @@ END//
 DELIMITER ;
 
 EXAMEN 2024 C:
+-- Cree un procedimiento que permita bonificar un pedido que se ha retrasado debido a la mala gestión 
+-- del empleado a cargo. Recibirá un identificador de pedido, asignará a otro empleado como gestor y 
+-- reducirá un 20% el precio unitario de cada línea de pedido asociada a ese pedido. (1,5 puntos)  
+-- Asegure que el pedido estaba asociado a un empleado y en caso contrario lance excepción con el 
+-- siguiente mensaje: (1 punto)  El pedido no tiene gestor.  
+-- Garantice que o bien se realizan todas las operaciones o bien no se realice ninguna. (1 punto) 
 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE bonificar_pedido_retrasado(IN p_pedidoId INT)
 BEGIN
-		DECLARE v_empleadoACargoPedido INT;
-		
-		-- Manejo de errores
+	DECLARE v_empleadoACargoPedido INT;	
+	-- Manejo de errores
 	  DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	  BEGIN
 	      ROLLBACK;
@@ -141,11 +153,11 @@ BEGIN
       	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El pedido no tiene gestor.';
    	END IF; 
   		
-	   UPDATE pedidos SET empleadoId=2 WHERE id = p_pedidoId;
-	   UPDATE lineaspedido SET precio= precio * 0.8 WHERE pedidoId = p_pedidoId;
+	UPDATE pedidos SET empleadoId=2 WHERE id = p_pedidoId;
+	UPDATE lineaspedido SET precio= precio * 0.8 WHERE pedidoId = p_pedidoId;
 
-		-- Confirmar transacción
-  		COMMIT;
+	-- Confirmar transacción
+  	COMMIT;
 
 END //
 DELIMITER ;
